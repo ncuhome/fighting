@@ -46,6 +46,8 @@ if __name__ == '__main__':
     app.run(debug=True)
 ```
 
+Schema语法:  http://restaction-zh-cn.readthedocs.io/schema/
+
 工具函数:
 
 ```python
@@ -54,17 +56,29 @@ from fighting import abort
 abort(message)  # 状态码为400，内容为"message"
 ```
 
-自定义指令:
+## 高级用法
+
+#### 自定义指令:
 
 ```python
 def my_directive(f, meta, app):
+    """
+    自定义`$my`指令
+    
+    Args:
+        f:    使用指令的函数
+        meta: 指令附带的数据
+        app:  Fighting对象
+    """
     def view():
         pass
     return view
 app = Fighting(__name__, directives={'name': my_directive})
 ```
 
-自定义校验器:
+注: 指令可理解为装饰器，这些装饰器会自动应用到被`app.res`装饰的函数上。
+
+#### 自定义校验器:
 
 ```python
 def my_validator(*args, **kwargs):
@@ -72,4 +86,16 @@ def my_validator(*args, **kwargs):
         pass
     return validator
 app = Fighting(__name__, validators={'name': my_validator})
+```
+
+参考:  https://github.com/guyskk/validr#custom-validator
+
+#### 调用远程API
+
+```python
+from fighting import Res, ResError                  # 请求失败会抛出ResError
+
+res = Res('http://127.0.0.1:5000/')                 # 设置URL前缀
+data = res.post('resource/action', {'name': 'kk'})  # 发送请求
+print(data)                                         # {'hello': 'kk'}
 ```
