@@ -1,0 +1,14 @@
+language: python
+python:
+- '3.3'
+- '3.4'
+- '3.5'
+install:
+- pip install -r requires-dev.txt
+- pip install .
+script:
+- export FIGHTING=$(cd /tmp && python -c "print(__import__('fighting').__path__[0])")
+- pytest --cov=$FIGHTING
+- flake8
+after_success:
+- codecov
