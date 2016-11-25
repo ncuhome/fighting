@@ -1,5 +1,3 @@
-from json.decoder import JSONDecodeError
-
 import requests
 
 
@@ -25,10 +23,10 @@ class Res(object):
         except requests.HTTPError as ex:
             try:
                 msg = response.json()
-            except JSONDecodeError:
+            except ValueError:
                 msg = str(ex)
             raise ResError(msg) from None
         try:
             return response.json()
-        except JSONDecodeError:
+        except ValueError:
             raise ResError("response data not valid JSON document") from None

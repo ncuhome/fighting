@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+include requires.txt
+include fighting/document.jinja2
