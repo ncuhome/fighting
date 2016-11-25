@@ -143,8 +143,8 @@ def get_title(doc):
         return ''
     lines = doc.strip('\n').split('\n', maxsplit=1)
     title = lines[0].strip()
-    if len(title) > 20:
-        title = title[:20] + '...'
+    if len(title) > 30:
+        title = title[:30] + '...'
     return title
 
 
