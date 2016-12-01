@@ -25,13 +25,13 @@
         <pre>{{v}}</pre>
         {% endfor %}
         
-        {% for resource, item in resources.items() %}
+        {% for resource, actions in resources.items() %}
         <b>{{resource}}</b>
         <table>
-          {% for action in item %}
+          {% for action in actions %}
           <tr>
             <td>
-              <a href="{{action.url}}">{{action.url}}</a>
+              <a href="{{resource}}/{{action.action}}">{{resource}}/{{action.action}}</a>
             </td>
             <td>
               <span>{{action.title}}</span></li>

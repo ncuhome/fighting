@@ -6,14 +6,13 @@ import re
 import textwrap
 from collections import OrderedDict
 
+import simple_yaml as yaml
 from flask import abort as flask_abort
 from flask import Flask, jsonify, request
 from jinja2 import Template
 from markdown import markdown as origin_markdown
 from validr import Invalid, SchemaError, SchemaParser
 from validr.schema import MarkKey
-
-import simple_yaml as yaml
 
 RE_DIRECTIVE = re.compile(r'[\t ]*\$\w+:')
 RE_SHARED = re.compile(r'[\t ]*\@\w+:')
@@ -39,7 +38,7 @@ def render(desc='', shared=None, resources=None, directives=None):
     if shared is None:
         shared = OrderedDict()
     else:
-        shared = OrderedDict([(k, dumps(v))for k, v in shared.items()])
+        shared = OrderedDict([(k, dumps(v)) for k, v in shared.items()])
     if resources is None:
         resources = OrderedDict()
     else:
@@ -47,7 +46,8 @@ def render(desc='', shared=None, resources=None, directives=None):
     if directives is None:
         directives = OrderedDict()
     else:
-        directives = OrderedDict([(k, dumps(v))for k, v in directives.items()])
+        directives = OrderedDict(
+            [(k, dumps(v)) for k, v in directives.items()])
     return _DOC_TMPL.render(
         desc=desc, shared=shared, directives=directives, resources=resources)
 
@@ -150,12 +150,14 @@ def get_title(doc):
 
 def input_directive(f, meta, api):
     """$input指令"""
+
     def view():
         try:
             data = validate(get_request_data())
         except Invalid as ex:
             abort(str(ex))
         return f(**data)
+
     with MarkKey('$input'):
         validate = api.schema_parser.parse(meta)
     return view
@@ -163,8 +165,10 @@ def input_directive(f, meta, api):
 
 def output_directive(f, meta, api):
     """$output指令"""
+
     def view(*args, **kwargs):
         return validate(f(*args, **kwargs))
+
     with MarkKey('$output'):
         validate = api.schema_parser.parse(meta)
     return view
@@ -202,16 +206,18 @@ class Fighting(Flask):
 
     def res(self, resource):
         """添加路由"""
+
         def decorater(f):
             action = f.__name__
             endpoint = '{}.{}'.format(resource, action)
             url = '/{}/{}'.format(resource, action)
             self._resources.setdefault(resource, [])\
-                .append({'title': get_title(f.__doc__), 'url': url})
+                .append({'title': get_title(f.__doc__), 'action': action})
             with MarkKey(endpoint):
                 view = self.make_view(f)
-            return self.route(url, methods=['GET', 'POST'],
-                              endpoint=endpoint)(view)
+            return self.route(
+                url, methods=['GET', 'POST'], endpoint=endpoint)(view)
+
         return decorater
 
     def make_view(self, f):
@@ -235,4 +241,5 @@ class Fighting(Flask):
                     return render(desc=desc, directives=directives)
             else:
                 flask_abort(405)
+
         return view
