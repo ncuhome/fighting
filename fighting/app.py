@@ -78,7 +78,7 @@ def get_request_data():
             data = request.get_json()
         except:
             abort("Invalid JSON content")
-        if not isinstance(data, collections.Mapping):
+        if not isinstance(data, collections.abc.Mapping):
             abort("JSON content must be object")
         return data
     else:
